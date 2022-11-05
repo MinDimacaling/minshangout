@@ -1,0 +1,184 @@
+
+
+<html>
+    <head>
+        <title>Simple Payroll</title>
+        
+    </head>
+    
+    <body onload="simplePayroll()">
+        <div class="container">
+                
+            <div class="box">
+    
+            <div class="navbar">
+                <a href="index.html">Home</a>
+            </div>
+    
+        <h1> Payroll </h1>
+            <p>
+            <label for ="employeeName"> Employee Name: </label>
+            <input id ="employeeName" name="employeeName"> </input> 
+            <br>
+    
+            <label for ="daysWorked"> Days Worked: </label>
+            <input id ="daysWorked" name="daysWorked" oninput="grossPay()"> </input>
+            <br>
+    
+            <label for ="dailyRate"> Daily Rate: </label>
+            <input id ="dailyRate" name="dailyRate" oninput="grossPay()"> </input>
+            <br>
+    
+            <label for = "deductionAmount"> Deduction Amount: </label>
+            <input id ="deductionAmount" name="deductionAmount"> </input>
+    
+            </p>
+    
+            <button onclick="addEmployee()"> Add Employee </button>
+    
+            <p>
+            <label for ="employeeNo"> No. of Employees: </label>
+            <input id ="employeeNo" name="employeeNo" readonly> </input> 		
+            </p>
+    
+            <button onclick="clearPayroll()"> Clear Payroll </button>
+    
+            <p>
+            <label for ="delEmployee"> Delete Employee: </label>
+            <input id ="delEmployee" name="delEmployee"> </input> 		
+            </p>
+        
+            <button onclick="deleteEmployee()"> Delete </button>
+            <br>
+            <br>
+    
+            <p id="payroll"> </p>
+            </div>
+        </div>
+    
+    <script>
+    
+    function simplePayroll() {
+        payroll=[];
+        document.getElementById("showPayroll()");
+    }
+    
+    function addEmployee() {
+        var employeePayroll = {
+            "employeeName": "1",
+            "daysWorked": "0", 
+            "dailyRate": "0", 
+            "deductionAmount": "0",
+            "grossPay": function grossPay() {
+                return Math.round(this.daysWorked*this.dailyRate*100)/100;
+            },
+            "netPay": function netPay() {
+                return Math.round(this.grossPay()-this.deductionAmount);
+            }
+        }
+    
+        employeePayroll.employeeName=document.getElementById("employeeName").value;
+        employeePayroll.daysWorked=document.getElementById("daysWorked").value;
+        employeePayroll.dailyRate=document.getElementById("dailyRate").value;
+        employeePayroll.deductionAmount=document.getElementById("deductionAmount").value;
+    
+        console.log(employeePayroll.employeeName);
+        console.log(employeePayroll.daysWorked);
+        console.log(employeePayroll.dailyRate);
+        console.log(employeePayroll.deductionAmount);
+    
+        payroll.push(employeePayroll);
+    
+        console.log(payroll.length);
+        document.getElementById("employeeNo").value=payroll.length;
+    
+        showPayroll();
+    }
+    
+    function clearPayroll () {
+        var toClear;
+        toClear=confirm("Delete all employees in the payroll?");
+    
+        if (toClear) {
+            simplePayroll();
+            showPayroll().innerHTML="";
+            document.getElementById("employeeNo").value=payroll.length;
+    
+        }
+    }
+    
+    function deleteEmployee () {
+        var toDelete;
+        var employeeNumber;
+    
+        employeeNumber=document.getElementById("delEmployee").value;
+        toDelete=confirm("Delete Employee no. "+employeeNumber+ "?");
+    
+        if (toDelete) {
+            payroll.splice(employeeNumber-1, 1);
+            document.getElementById("employeeNo").value=payroll.length;
+            
+            showPayroll();
+        }
+    }
+    
+    
+    function showPayroll() {
+        var i, l, payrollText, totalDaysWorked, totalDailyRate, totalGrossPay, totalDedAmt, totalNetPay, ln;
+        var tHeader, tBody, tFooter;
+    
+        tHeader="<thead>";
+        tHeader+="<tr>";
+        tHeader+="<th> No. </th>";
+        tHeader+="<th> Employee Name </th>";
+        tHeader+="<th> Days Worked </th>";
+        tHeader+="<th> Daily Rate </th>";
+        tHeader+="<th> Gross Pay </th>";
+        tHeader+="<th> Deduction Amount </th>";
+        tHeader+="<th> Net Pay </th>";
+        tHeader+="</tr>";
+        tHeader+="</thead>";
+    
+        l = payroll.length;
+    
+        for (i=0, totalGrossPay=0, totalNetPay=0, totalDaysWorked=0, totalDailyRate=0, totalDedAmt=0, payrollText="", tBody=''; i < l; i++) {
+            ln = i + 1;
+            tBody += "<tr>" 
+                +'<td>'+ln+'</td>'
+                +'<td>'+payroll[i].employeeName+'</td>'
+                +'<td>'+payroll[i].daysWorked+'</td>'
+                +'<td>'+payroll[i].dailyRate+'</td>'
+                +'<td>'+payroll[i].grossPay()+'</td>'
+                +'<td>'+payroll[i].deductionAmount+'</td>'
+                +'<td>'+payroll[i].netPay()+'</td>'
+                +"</tr>";
+    
+            totalDaysWorked+=parseInt(payroll[i].daysWorked);
+            totalDailyRate+=parseInt(payroll[i].dailyRate);
+            totalDedAmt+=parseInt(payroll[i].deductionAmount);
+            totalGrossPay+=payroll[i].grossPay();
+            totalNetPay+=payroll[i].netPay();
+        }
+    
+        tFooter ="<tfoot>";
+        tFooter+="<tr>";
+        tFooter+='<th>'+payroll.length+'</th>';
+        tFooter+='<th></th>';
+        tFooter+='<th>'+totalDaysWorked+'</th>';
+        tFooter+='<th>'+totalDailyRate+'</th>';
+        tFooter+='<th>'+totalGrossPay+'</th>';
+        tFooter+='<th>'+totalDedAmt+'</th>';
+        tFooter+='<th>'+totalNetPay+'</th>';
+        tFooter+="</tr>";
+        tFooter+="</tfoot>";
+    
+        console.log(tHeader+tBody+tFooter);
+        document.getElementById("payroll").innerHTML='<table>'+tHeader+tBody+tFooter+'</table>';
+        
+    }
+    
+    var payroll = [];
+    </script>
+    </body>
+    
+    </html>
